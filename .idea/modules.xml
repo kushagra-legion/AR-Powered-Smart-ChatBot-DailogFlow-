@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AndroidStudioProjects-dialogflow-android-master.iml" filepath="$PROJECT_DIR$/AndroidStudioProjects-dialogflow-android-master.iml" group="dialogflow-android-master" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="dialogflow-android-master/app" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/dialogflow-android-master.iml" filepath="$PROJECT_DIR$/.idea/modules/dialogflow-android-master.iml" group="dialogflow-android-master" />
+      <module fileurl="file://$PROJECT_DIR$/app/dialogflow-android-master-app.iml" filepath="$PROJECT_DIR$/app/dialogflow-android-master-app.iml" group="dialogflow-android-master/app" />
     </modules>
   </component>
 </project>

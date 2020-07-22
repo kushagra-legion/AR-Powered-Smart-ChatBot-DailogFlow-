@@ -36,7 +36,7 @@ SessionName session;
 
     public  void kud()
     {
-       // Initiate Dialogflow Agent
+       // Initiate Dialogflow Agent222222222
 
         try {
             InputStream stream = getResources().openRawResource(R.raw.chatbotcred);
