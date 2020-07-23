@@ -1,8 +1,9 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 28
     defaultConfig {
+        android.defaultConfig.javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
         applicationId "no.realitylab.chatbot"
         minSdkVersion 23
         targetSdkVersion 28
@@ -34,12 +35,18 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.google.cloud:google-cloud-dialogflow:0.67.0-alpha'
-    implementation 'io.grpc:grpc-okhttp:1.15.1'
-
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'io.grpc:grpc-okhttp:1.13.1'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.google.firebase:firebase-core:17.4.4'
+    implementation 'com.google.firebase:firebase-auth:19.3.2'
+    implementation 'com.firebaseui:firebase-ui-database:3.2.2'
+    implementation 'com.google.firebase:firebase-database:19.3.1'
     implementation 'ai.api:sdk:2.0.7@aar'
-    implementation 'ai.api:libai:1.6.12'
+    implementation 'ai.api:libai:1.4.8'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:design:28.0.0'
+    implementation 'com.google.firebase:firebase-core:9.6.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

@@ -61,7 +61,7 @@ public class RequestJavaV2Task extends AsyncTask<Void, Void, DetectIntentRespons
 
     protected void onPostExecute(DetectIntentResponse response) {
 
-        ((Testing) activity).callbackV2(response);
+        ((Main2Activity) activity).callbackV2(response);
 
     }
 

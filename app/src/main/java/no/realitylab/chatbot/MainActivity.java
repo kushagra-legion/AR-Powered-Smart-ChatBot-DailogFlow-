@@ -3,10 +3,6 @@ package no.realitylab.chatbot;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,8 +14,10 @@ import ai.api.android.AIService;
 import ai.api.model.AIError;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
-public class MainActivity extends AppCompatActivity implements AIListener {
+public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_AUDIO = 0;
     private static final String TAG = "MainActivity";
@@ -40,13 +38,13 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(MainActivity.this,Testing.class);
+                Intent intent=new Intent(MainActivity.this,Main2Activity.class);
                 startActivity(intent);
             }
         });
 
 
-        listenButton = findViewById(R.id.listenButton);
+        /*listenButton = findViewById(R.id.listenButton);
         fulfillmentTextView = findViewById(R.id.fulfillmentText);
         inputTextView = findViewById(R.id.inputText);
         actionTextView = findViewById(R.id.actionText);
@@ -143,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
             // Request the permission. The result will be received in onRequestPermissionResult().
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_REQUEST_AUDIO);
-        }
+        }*/
     }
 
 }
