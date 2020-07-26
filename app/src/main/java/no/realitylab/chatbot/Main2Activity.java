@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,7 +53,6 @@ public class Main2Activity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         editText = (EditText) findViewById(R.id.editText);
         addBtn = (RelativeLayout) findViewById(R.id.addBtn);
-        getActionBar().setIcon(R.drawable.ic_delete_black_24dp);
 
         recyclerView.setHasFixedSize(true);
         linearLayoutManager = new LinearLayoutManager(this);

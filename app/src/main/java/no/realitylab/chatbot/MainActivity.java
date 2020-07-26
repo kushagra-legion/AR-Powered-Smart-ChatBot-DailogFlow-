@@ -1,40 +1,55 @@
 package no.realitylab.chatbot;
 
-import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.util.SparseArray;
+import android.util.SparseIntArray;
+import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-import ai.api.AIListener;
-import ai.api.android.AIConfiguration;
-import ai.api.android.AIService;
-import ai.api.model.AIError;
-import ai.api.model.AIResponse;
-import ai.api.model.Result;
+import android.widget.Toast;
+
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.TextBlock;
+import com.google.android.gms.vision.text.TextRecognizer;
+
+import java.io.IOException;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
+    Integer REQUESST_CAMERA=1, SELECT_FILE=0;
+    Uri selectImageUri;
+    private Button listenButton, b;
+    ImageView ivImage;
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
-    private static final int PERMISSION_REQUEST_AUDIO = 0;
-    private static final String TAG = "MainActivity";
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
 
-    private Button listenButton,b;
-    private TextView inputTextView;
-    private TextView fulfillmentTextView;
-    private TextView actionTextView;
-    private AIConfiguration config;
-    private AIService aiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        ivImage = (ImageView) findViewById(R.id.imageView);
+        MainActivity activity = (MainActivity) MainActivity.this;
         b=findViewById(R.id.button);
+        listenButton=findViewById(R.id.button3);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -42,106 +57,84 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
-        /*listenButton = findViewById(R.id.listenButton);
-        fulfillmentTextView = findViewById(R.id.fulfillmentText);
-        inputTextView = findViewById(R.id.inputText);
-        actionTextView = findViewById(R.id.actionText);
-        //TODO: add here your client access token from DialogFlow console
-        //221267808088-ngk9u2k06hiubhictai88mf84bv3942p.apps.googleusercontent.com
-        //2df76ca82abeab910f40f864678c4f9f559b24d4
-        config = new AIConfiguration("2df76ca82abeab910f40f864678c4f9f559b24d4",
-                AIConfiguration.SupportedLanguages.English,
-                AIConfiguration.RecognitionEngine.System);
-        aiService = AIService.getService(this, config);
-        aiService.setListener(this);
         listenButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                listenButton.setText(R.string.listening);
-                listen();
+            public void onClick(View v) {
+                SelectImage();
             }
         });
-    }
 
-    private void listen() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "kkkkkkzzzz");
-            aiService.startListening();
-            Log.d(TAG, "kkkkkkzzzz");
-        } else {
-            // Permission is missing and must be requested.
-            requestAudioPermission();
-        }
-    }
-
-    @Override
-    public void onResult(AIResponse response) {
-        Log.d(TAG, "kkkkkyyyy " + String.valueOf(response));
-        Result result = response.getResult();
-        inputTextView.setText(getString(R.string.input , result.getResolvedQuery()));
-        fulfillmentTextView.setText(getString(R.string.answer , result.getFulfillment().getSpeech()));
-        actionTextView.setText(getString(R.string.intent , result.getMetadata().getIntentName()));
-    }
-
-    @Override
-    public void onError(AIError error) {
-        Log.d(TAG, "Listening error: " + error.getMessage());
-    }
-
-    @Override
-    public void onAudioLevel(float level) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.ll);
 
     }
 
-    @Override
-    public void onListeningStarted() {}
+    private void SelectImage(){
+        final CharSequence[] items={"Camera","Gallery","Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Welcome");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                if(items[i].equals("Camera")){
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, REQUESST_CAMERA);
 
-    @Override
-    public void onListeningCanceled() {}
+                }
+                else if(items[i].equals("Gallery")){
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    startActivityForResult(intent.createChooser(intent, "Select File"),SELECT_FILE);
 
-    @Override
-    public void onListeningFinished() {
-        listenButton.setText(R.string.ask);
+                }
+                else if(items[i].equals("Cancel")){
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
     }
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_AUDIO) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "kkkkkk");
-                aiService.startListening();
-            } else {
-                Log.d(TAG, "permission denied");
+    public void onActivityResult(int requestCode,int resultCode,Intent data){
+        Bitmap bmp = null;
+        super.onActivityResult(requestCode, resultCode,data);
+        if(resultCode== Activity.RESULT_OK){
+            if(requestCode==REQUESST_CAMERA){
+                Bundle bundle = data.getExtras();
+                bmp = (Bitmap)bundle.get("data");
+                ivImage.setImageBitmap(bmp);
+
+            }else if(requestCode==SELECT_FILE){
+
+
+                selectImageUri = data.getData();
+                ivImage.setImageURI(selectImageUri);
+                String a = selectImageUri.getPath();
+                try {
+                    bmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectImageUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(this, a, Toast.LENGTH_LONG).show();
+                try {
+                    extract(bmp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
-
-    private void requestAudioPermission() {
-        // Permission has not been granted and must be requested.
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.RECORD_AUDIO)) {
-            // Provide an additional rationale to the user if the permission was not granted
-            // and the user would benefit from additional context for the use of the permission.
-            // Display a SnackBar with cda button to request the missing permission.
-            Snackbar.make(findViewById(R.id.main_container), getString(R.string.permission_text_audio),
-                    Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.ok), new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Request the permission
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{Manifest.permission.RECORD_AUDIO},
-                            PERMISSION_REQUEST_AUDIO);
-                }
-            }).show();
-
-        } else {
-            // Request the permission. The result will be received in onRequestPermissionResult().
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_REQUEST_AUDIO);
-        }*/
+    public void extract(Bitmap bitmap) throws IOException {
+        TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
+        Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+        SparseArray<TextBlock> items = textRecognizer.detect(frame);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < items.size(); i++) {
+            TextBlock myItems = items.valueAt(i);
+            stringBuilder.append(myItems.getValue());
+            stringBuilder.append("\n");
+        }
+        TextView textView = (TextView) findViewById(R.id.textView);
+        textView.setText(stringBuilder);
+        Log.d("meraString", String.valueOf(stringBuilder));
     }
-
 }
