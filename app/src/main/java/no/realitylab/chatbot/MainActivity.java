@@ -64,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.ll);
-
     }
 
     private void SelectImage(){
@@ -115,11 +113,11 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 Toast.makeText(this, a, Toast.LENGTH_LONG).show();
-                try {
-                    extract(bmp);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            }
+            try {
+                extract(bmp);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
